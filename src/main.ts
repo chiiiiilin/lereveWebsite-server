@@ -1,10 +1,12 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -21,6 +23,7 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('/api');
+  app.useGlobalPipes(new ValidationPipe());
 
   // 設置全域的未處理 Promise 拒絕處理器
   process.on('unhandledRejection', (reason, promise) => {
@@ -40,7 +43,7 @@ async function bootstrap() {
     .addServer(`${swaggerUrl}/`)
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    include: [],
+    include: [AuthModule, UsersModule],
   });
   SwaggerModule.setup('swagger', app, document);
 
