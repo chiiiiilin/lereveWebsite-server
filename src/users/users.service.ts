@@ -41,24 +41,18 @@ export class UsersService {
   async putUser(userId: string, data: UpdateUserDto, trashed?: boolean) {
     const exists = await this.userModel.exists({ _id: userId, trashed: false });
     if (!exists) throw new BadRequestException(`User not found: ${userId}`);
-    const { username, email, password, role } = data;
+    const { password, ...rest } = data;
     const update = {
-      username: username ? username : undefined,
-      email: email ? email : undefined,
-      password: password ? await bcrypt.hash(password, 10) : undefined,
-      role: role ? role : undefined,
-      trashed: trashed ? trashed : undefined,
+      ...rest,
+      ...(password && { passwordHash: await bcrypt.hash(password, 10) }),
+      ...(trashed !== undefined && { trashed }),
     };
-    const updated = await this.userModel.findOneAndUpdate(
-      { _id: userId },
-      update,
-      { new: true },
-    );
-    return {
-      _id: updated!._id,
-      username: updated!.username,
-      email: updated!.email,
-      role: updated!.role,
-    };
+    const updated = await this.userModel
+      .findByIdAndUpdate(userId, update, {
+        new: true,
+      })
+      .select('-passwordHash -trashed -__v')
+      .exec();
+    return updated;
   }
 }
