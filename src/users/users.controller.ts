@@ -25,8 +25,11 @@ export class UsersController {
     summary: '新增使用者',
     description: '新增使用者',
   })
-  create(@Body() body: CreateUserDto) {
+  // createUser(@Body() body: Record<string, unknown>) {
+  createUser(@Body() body: CreateUserDto) {
     this.logger.log(`POST Create User - ${JSON.stringify(body)}`);
+    // const dto = new CreateUserDto(body);
+    // return this.usersService.addUser(dto);
     return this.usersService.addUser(body);
   }
 
