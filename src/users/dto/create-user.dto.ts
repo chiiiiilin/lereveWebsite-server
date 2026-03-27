@@ -1,11 +1,7 @@
 // import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-
-export enum UserRoleEnum {
-  ADMIN = 'admin',
-  USER = 'user',
-}
+import { UserRoleEnum } from '../users.schema';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -39,6 +35,7 @@ export class CreateUserDto {
     description: '使用者角色',
     required: true,
     default: UserRoleEnum.USER,
+    enum: UserRoleEnum,
   })
   @IsEnum(UserRoleEnum)
   role: UserRoleEnum;

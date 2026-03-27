@@ -22,6 +22,8 @@ export class ProductsService {
     const newProduct = new this.productModel(data);
     const saved = await newProduct.save();
     const { trashed: _trashed, ...result } = saved.toObject();
+    this.logger.log(`Add product: ${JSON.stringify(result)}`);
+
     return result;
   }
 
@@ -61,6 +63,8 @@ export class ProductsService {
       .findByIdAndUpdate(productId, update, { new: true })
       .select('-trashed -__v')
       .exec();
+    this.logger.log(`Update product: ${JSON.stringify(update)}`);
+
     return updated;
   }
 }

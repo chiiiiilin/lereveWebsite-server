@@ -19,6 +19,8 @@ export class UsersService {
     const passwordHash = await bcrypt.hash(password, 10);
     const newUser = new this.userModel({ ...rest, passwordHash });
     const saved = await newUser.save();
+    this.logger.log(`Add user: ${JSON.stringify(saved._id)}`);
+
     return {
       username: saved.username,
       email: saved.email,
@@ -31,10 +33,16 @@ export class UsersService {
     const user = await this.userModel
       .findOne({ username, trashed: false })
       .exec();
-    if (!user) return undefined;
-
+    if (!user) {
+      this.logger.warn(`Login failed: user not found - ${username}`);
+      return undefined;
+    }
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    return isMatch ? user : undefined;
+    if (!isMatch) {
+      this.logger.warn(`Login failed: wrong password — ${username}`);
+      return undefined;
+    }
+    return user;
   }
 
   /**更新使用者 */
@@ -53,6 +61,8 @@ export class UsersService {
       })
       .select('-passwordHash -trashed -__v')
       .exec();
+    this.logger.log(`Update user: ${JSON.stringify(updated)}`);
+
     return updated;
   }
 }

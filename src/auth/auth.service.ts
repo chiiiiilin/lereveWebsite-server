@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { UserRoleEnum } from 'src/users/dto/create-user.dto';
+import { UserRoleEnum } from 'src/users/users.schema';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<{ username: string; role: string; access_token: string }> {
-    this.logger.log(`auth login: ${JSON.stringify(username)}`);
+    this.logger.log(`auth login: ${username}`);
     const user = await this.usersService.findUserFromLogin(username, password);
     if (!user) throw new UnauthorizedException();
 
@@ -28,6 +28,7 @@ export class AuthService {
   }
 
   refreshToken(username: string, role: UserRoleEnum) {
+    this.logger.log(`refresh token: ${username}`);
     return {
       access_token: this.jwtService.sign({ username, role }),
     };

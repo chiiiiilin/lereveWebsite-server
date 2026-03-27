@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRoleEnum } from 'src/users/dto/create-user.dto';
+import { UserRoleEnum } from 'src/users/users.schema';
 
 export class LoginRequest {
   @ApiProperty({
