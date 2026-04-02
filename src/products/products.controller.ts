@@ -28,7 +28,7 @@ export class ProductsController {
     description: '新增商品',
   })
   create(@Body() body: CreateProductDto) {
-    this.logger.log(`POST Create Product - ${JSON.stringify(body)}`);
+    this.logger.log(`[POST] Create Product - ${JSON.stringify(body)}`);
     return this.productsService.create(body);
   }
 
@@ -39,7 +39,6 @@ export class ProductsController {
     description: '取得商品列表，不包含description',
   })
   findAll() {
-    this.logger.log(`GET Find All Product`);
     return this.productsService.findAll();
   }
 
@@ -50,7 +49,6 @@ export class ProductsController {
     description: '取得詳細商品資訊',
   })
   findOne(@Param('productId') id: string) {
-    this.logger.log(`GET Find Product`);
     return this.productsService.findOne(id);
   }
 
@@ -66,7 +64,7 @@ export class ProductsController {
     @Param('productId') productId: string,
     @Body() body: UpdateProductDto,
   ) {
-    this.logger.log(`PUT Update Product - ${productId}`);
+    this.logger.log(`[PUT] Update Product - ${productId}`);
     return this.productsService.update(productId, body);
   }
 
@@ -79,7 +77,7 @@ export class ProductsController {
     description: '刪除商品',
   })
   remove(@Param('productId') productId: string) {
-    this.logger.log(`PUT Remove Product - ${productId}`);
+    this.logger.log(`[PUT] Remove Product - ${productId}`);
     return this.productsService.update(productId, {}, true);
   }
 }

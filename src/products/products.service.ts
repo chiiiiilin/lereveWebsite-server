@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product } from './products.schema';
@@ -31,7 +26,7 @@ export class ProductsService {
   async findAll() {
     return await this.productModel
       .find({ trashed: false })
-      .select('-description -trashed -variants.trashed -__v')
+      .select('-description -trashed -variants.trashed')
       .exec();
   }
 
@@ -39,10 +34,10 @@ export class ProductsService {
   async findOne(productId: string) {
     const product = await this.productModel
       .findById(productId)
-      .select('-trashed -__v')
+      .select('-trashed')
       .exec();
     if (!product) {
-      throw new NotFoundException('商品不存在');
+      throw new NotFoundException(`Product not found: ${productId}`);
     }
     return product;
   }
@@ -53,15 +48,14 @@ export class ProductsService {
       _id: productId,
       trashed: false,
     });
-    if (!exists)
-      throw new BadRequestException(`Product not found: ${productId}`);
+    if (!exists) throw new NotFoundException(`Product not found: ${productId}`);
     const update = {
       ...data,
       ...(trashed !== undefined && { trashed }),
     };
     const updated = await this.productModel
       .findByIdAndUpdate(productId, update, { new: true })
-      .select('-trashed -__v')
+      .select('-trashed')
       .exec();
     this.logger.log(`Update product: ${JSON.stringify(update)}`);
 

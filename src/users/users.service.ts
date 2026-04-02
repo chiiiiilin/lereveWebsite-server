@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { NotFoundException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -48,7 +48,7 @@ export class UsersService {
   /**更新使用者 */
   async putUser(userId: string, data: UpdateUserDto, trashed?: boolean) {
     const exists = await this.userModel.exists({ _id: userId, trashed: false });
-    if (!exists) throw new BadRequestException(`User not found: ${userId}`);
+    if (!exists) throw new NotFoundException(`User not found: ${userId}`);
     const { password, ...rest } = data;
     const update = {
       ...rest,
@@ -59,7 +59,7 @@ export class UsersService {
       .findByIdAndUpdate(userId, update, {
         new: true,
       })
-      .select('-passwordHash -trashed -__v')
+      .select('-passwordHash -trashed')
       .exec();
     this.logger.log(`Update user: ${JSON.stringify(updated)}`);
 

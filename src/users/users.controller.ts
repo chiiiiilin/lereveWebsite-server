@@ -27,7 +27,7 @@ export class UsersController {
   })
   // createUser(@Body() body: Record<string, unknown>) {
   createUser(@Body() body: CreateUserDto) {
-    this.logger.log(`POST Create User - ${JSON.stringify(body)}`);
+    this.logger.log(`[POST] Create User - ${JSON.stringify(body)}`);
     // const dto = new CreateUserDto(body);
     // return this.usersService.addUser(dto);
     return this.usersService.addUser(body);
@@ -42,7 +42,7 @@ export class UsersController {
     description: '修改使用者',
   })
   editUser(@Param('userId') userId: string, @Body() body: UpdateUserDto) {
-    this.logger.log(`PUT user - ${userId}`);
+    this.logger.log(`[PUT] user - ${userId}`);
     return this.usersService.putUser(userId, body);
   }
 
@@ -55,7 +55,7 @@ export class UsersController {
     description: '刪除使用者',
   })
   removeUser(@Param('userId') userId: string) {
-    this.logger.log(`PUT remove user - ${userId}`);
+    this.logger.log(`[PUT] remove user - ${userId}`);
     return this.usersService.putUser(userId, {}, true);
   }
 }
