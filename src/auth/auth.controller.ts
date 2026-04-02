@@ -1,8 +1,8 @@
-import { Request, Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Request, Body, Controller, Post } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { LoginRequest, JWTObject } from 'src/auth/auth.dto';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth.guard';
+import { Auth } from '../auth/auth.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -21,8 +21,7 @@ export class AuthController {
 
   // 刷新token
   @Post('refreshToken')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth()
   @ApiOperation({
     summary: '刷新Token',
     description: '不需參數，帶有效的Token刷新Token效期，過期則需重新登入',

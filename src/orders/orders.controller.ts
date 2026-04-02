@@ -7,15 +7,15 @@ import {
   Param,
   Req,
   Logger,
-  UseGuards,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Auth } from '../auth/auth.decorator';
 import { JWTObject } from 'src/auth/auth.dto';
+import { UserRoleEnum } from 'src/users/users.schema';
 
 @Controller('orders')
 export class OrdersController {
@@ -35,8 +35,7 @@ export class OrdersController {
 
   /**賣家查詢所有訂單 */
   @Get()
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '查詢所有訂單',
     description: '用於賣家查詢所有訂單，查詢單一買家的所有訂單時加上userId參數',
@@ -46,22 +45,9 @@ export class OrdersController {
     return this.ordersService.findAll(1, 20, userId);
   }
 
-  /**賣家查詢單筆訂單詳情 */
-  @Get(':orderId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
-  @ApiOperation({
-    summary: '查詢單筆訂單',
-    description: '賣家查詢單筆訂單詳情',
-  })
-  findOne(@Param('orderId') orderId: string) {
-    return this.ordersService.findOne(orderId);
-  }
-
   /**買家查詢所有訂單 */
   @Get('mine')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth()
   @ApiOperation({
     summary: '買家查詢所有訂單',
     description: '用於買家查詢自己的所有訂單',
@@ -72,8 +58,7 @@ export class OrdersController {
 
   /**買家查詢單筆訂單 */
   @Get('mine/:orderId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth()
   @ApiOperation({
     summary: '買家查詢單筆訂單詳情',
     description: '買家查詢單筆訂單詳情',
@@ -85,10 +70,20 @@ export class OrdersController {
     return this.ordersService.findOne(orderId, req.user.userId);
   }
 
+  /**賣家查詢單筆訂單詳情 */
+  @Get(':orderId')
+  @Auth(UserRoleEnum.ADMIN)
+  @ApiOperation({
+    summary: '查詢單筆訂單',
+    description: '賣家查詢單筆訂單詳情',
+  })
+  findOne(@Param('orderId') orderId: string) {
+    return this.ordersService.findOne(orderId);
+  }
+
   /**修改單筆訂單 */
   @Put('edit/:orderId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '更新單筆訂單',
     description: '更新單筆訂單，只允許admin更新訂單狀態及付款確認狀態',

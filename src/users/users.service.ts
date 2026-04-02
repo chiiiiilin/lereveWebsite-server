@@ -1,4 +1,9 @@
-import { NotFoundException, Injectable, Logger } from '@nestjs/common';
+import {
+  NotFoundException,
+  Injectable,
+  Logger,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -46,9 +51,21 @@ export class UsersService {
   }
 
   /**更新使用者 */
-  async putUser(userId: string, data: UpdateUserDto, trashed?: boolean) {
+  async putUser(
+    userId: string,
+    data: UpdateUserDto,
+    trashed?: boolean,
+    currentUserId?: string,
+  ) {
     const exists = await this.userModel.exists({ _id: userId, trashed: false });
     if (!exists) throw new NotFoundException(`User not found: ${userId}`);
+
+    if (currentUserId && currentUserId !== userId) {
+      throw new ForbiddenException(
+        'Permission denied: cannot update other users',
+      );
+    }
+
     const { password, ...rest } = data;
     const update = {
       ...rest,

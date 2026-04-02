@@ -19,7 +19,11 @@ export class AuthService {
     const user = await this.usersService.findUserFromLogin(username, password);
     if (!user) throw new UnauthorizedException();
 
-    const payload = { sub: user._id, username: user.username, role: user.role };
+    const payload = {
+      userId: user._id,
+      username: user.username,
+      role: user.role,
+    };
     return {
       username: user.username,
       role: user.role,

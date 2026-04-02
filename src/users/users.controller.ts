@@ -5,13 +5,14 @@ import {
   Put,
   Param,
   Logger,
-  UseGuards,
+  Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Auth } from 'src/auth/auth.decorator';
+import { JWTObject } from 'src/auth/auth.dto';
 
 @Controller('users')
 export class UsersController {
@@ -20,7 +21,6 @@ export class UsersController {
 
   /**新增使用者 */
   @Post('add')
-  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: '新增使用者',
     description: '新增使用者',
@@ -35,21 +35,23 @@ export class UsersController {
 
   /**修改使用者 */
   @Put('edit/:userId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth()
   @ApiOperation({
     summary: '修改使用者',
     description: '修改使用者',
   })
-  editUser(@Param('userId') userId: string, @Body() body: UpdateUserDto) {
+  editUser(
+    @Param('userId') userId: string,
+    @Body() body: UpdateUserDto,
+    @Req() req: { user: JWTObject },
+  ) {
     this.logger.log(`[PUT] user - ${userId}`);
-    return this.usersService.putUser(userId, body);
+    return this.usersService.putUser(userId, body, undefined, req.user.userId);
   }
 
   /**軟刪除使用者 */
   @Put('remove/:userId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth()
   @ApiOperation({
     summary: '刪除使用者',
     description: '刪除使用者',

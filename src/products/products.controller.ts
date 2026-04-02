@@ -6,13 +6,13 @@ import {
   Put,
   Param,
   Logger,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Auth } from 'src/auth/auth.decorator';
+import { UserRoleEnum } from 'src/users/users.schema';
 
 @Controller('products')
 export class ProductsController {
@@ -21,8 +21,7 @@ export class ProductsController {
 
   /**新增商品 */
   @Post('add')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '新增商品',
     description: '新增商品',
@@ -54,8 +53,7 @@ export class ProductsController {
 
   /**更新商品 */
   @Put('edit/:productId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '更新商品',
     description: '更新商品',
@@ -70,8 +68,7 @@ export class ProductsController {
 
   /**軟刪除商品 */
   @Put('remove/:productId')
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
+  @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '刪除商品',
     description: '刪除商品',
