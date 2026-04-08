@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './users.schema';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserRoleDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -79,6 +79,20 @@ export class UsersService {
       .select('-passwordHash -trashed')
       .exec();
     this.logger.log(`Update user: ${JSON.stringify(updated)}`);
+
+    return updated;
+  }
+
+  /**變更使用者權限 */
+  async updateRole(userId: string, data: UpdateUserRoleDto) {
+    const exists = await this.userModel.exists({ _id: userId, trashed: false });
+    if (!exists) throw new NotFoundException(`User not found: ${userId}`);
+
+    const updated = await this.userModel
+      .findByIdAndUpdate(userId, data, { new: true })
+      .select('-passwordHash -trashed')
+      .exec();
+    this.logger.log(`Update User Role: ${JSON.stringify(updated)}`);
 
     return updated;
   }

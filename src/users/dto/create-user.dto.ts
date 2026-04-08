@@ -1,7 +1,6 @@
 // import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UserRoleEnum } from '../users.schema';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -30,15 +29,6 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
-
-  @ApiProperty({
-    description: '使用者角色',
-    required: true,
-    default: UserRoleEnum.USER,
-    enum: UserRoleEnum,
-  })
-  @IsEnum(UserRoleEnum)
-  role: UserRoleEnum;
 
   // constructor(data: Record<string, unknown>) {
   //   if (!data.username || typeof data.username !== 'string') {
