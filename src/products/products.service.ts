@@ -1,3 +1,4 @@
+import { UploadService } from './../upload/upload.service';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -5,12 +6,46 @@ import { Product } from './products.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
+interface ProductDocument {
+  imageKeys?: string[];
+  variants?: {
+    imageKeys?: string[];
+    [key: string]: unknown;
+  }[];
+}
+
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel(Product.name) private readonly productModel: Model<Product>,
+    private readonly uploadService: UploadService,
   ) {}
   private readonly logger = new Logger(ProductsService.name);
+
+  private async attachImageUrls(product: ProductDocument) {
+    const imageUrls = product.imageKeys?.length
+      ? await Promise.all(
+          product.imageKeys.map((key) =>
+            this.uploadService.getPresignedUrl(key),
+          ),
+        )
+      : undefined;
+
+    const variants = await Promise.all(
+      product.variants?.map(async (variant) => ({
+        ...variant,
+        imageUrls: variant.imageKeys?.length
+          ? await Promise.all(
+              variant.imageKeys.map((key) =>
+                this.uploadService.getPresignedUrl(key),
+              ),
+            )
+          : undefined,
+      })) ?? [],
+    );
+
+    return { ...product, imageUrls, variants };
+  }
 
   /**新增商品 */
   async create(data: CreateProductDto) {
@@ -24,10 +59,16 @@ export class ProductsService {
 
   /**查詢所有商品列表 */
   async findAll() {
-    return await this.productModel
+    const products = await this.productModel
       .find({ trashed: false })
       .select('-description -trashed -variants.trashed')
       .exec();
+
+    return Promise.all(
+      products.map((product) =>
+        this.attachImageUrls(product.toObject() as any),
+      ),
+    );
   }
 
   /**查詢單一品項 */
@@ -39,7 +80,8 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException(`Product not found: ${productId}`);
     }
-    return product;
+
+    return this.attachImageUrls(product.toObject() as any);
   }
 
   /**更新商品 */
@@ -59,6 +101,6 @@ export class ProductsService {
       .exec();
     this.logger.log(`Update product: ${JSON.stringify(update)}`);
 
-    return updated;
+    return this.attachImageUrls(updated!.toObject() as any);
   }
 }

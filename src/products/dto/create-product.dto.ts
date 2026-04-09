@@ -25,7 +25,7 @@ export class VariantDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  imageUrls: string[];
+  imageKeys: string[];
 
   @ApiProperty({ description: '價格' })
   @IsNumber()
@@ -68,7 +68,7 @@ export class CreateProductDto {
   })
   @IsArray()
   @IsString({ each: true })
-  imageUrls: string[];
+  imageKeys: string[];
 
   @ApiProperty({
     description: '是否上架',

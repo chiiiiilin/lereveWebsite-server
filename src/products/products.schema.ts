@@ -21,7 +21,7 @@ export class Variants {
   isAvailable: boolean;
 
   @Prop({ type: [String] })
-  imageUrls: string[];
+  imageKeys: string[];
 
   @Prop({ default: false })
   trashed: boolean;
@@ -36,7 +36,7 @@ export class Product {
   description: string;
 
   @Prop({ type: [String] })
-  imageUrls: string[];
+  imageKeys: string[];
 
   @Prop({ default: true })
   isAvailable: boolean;
