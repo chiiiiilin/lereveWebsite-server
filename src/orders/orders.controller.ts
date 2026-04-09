@@ -40,9 +40,15 @@ export class OrdersController {
     summary: '查詢所有訂單',
     description: '用於賣家查詢所有訂單，查詢單一買家的所有訂單時加上userId參數',
   })
+  @ApiQuery({ name: 'page', required: false, default: 1 })
+  @ApiQuery({ name: 'limit', required: false, default: 20 })
   @ApiQuery({ name: 'userId', required: false })
-  findAll(@Query('userId') userId?: string) {
-    return this.ordersService.findAll(1, 20, userId);
+  findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('userId') userId?: string,
+  ) {
+    return this.ordersService.findAll(+page, +limit, userId);
   }
 
   /**買家查詢所有訂單 */
