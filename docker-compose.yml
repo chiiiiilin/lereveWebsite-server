@@ -9,3 +9,11 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ${DATA_SAVE_PATH}/mongo:/data/db
+  app:
+    build: .
+    ports: 
+      - "3000:3000"
+    env_file: 
+      - .env.docker
+    depends_on: 
+      - mongo
