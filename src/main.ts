@@ -42,25 +42,27 @@ async function bootstrap() {
   });
 
   // swagger option
-  const config = new DocumentBuilder()
-    .setTitle('Lereve Website API DOC')
-    .setVersion('0.0.1')
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'access-token',
-    )
-    .addServer(`${swaggerUrl}/`)
-    .build();
-  const document = SwaggerModule.createDocument(app, config, {
-    include: [
-      AuthModule,
-      UsersModule,
-      ProductsModule,
-      OrdersModule,
-      UploadModule,
-    ],
-  });
-  SwaggerModule.setup('swagger', app, document);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Lereve Website API DOC')
+      .setVersion('0.0.1')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'access-token',
+      )
+      .addServer(`${swaggerUrl}/`)
+      .build();
+    const document = SwaggerModule.createDocument(app, config, {
+      include: [
+        AuthModule,
+        UsersModule,
+        ProductsModule,
+        OrdersModule,
+        UploadModule,
+      ],
+    });
+    SwaggerModule.setup('swagger', app, document);
+  }
 
   const server = await app.listen(port, '0.0.0.0', () =>
     Logger.log(`lereveWebsite is listening port: ${port}`),
