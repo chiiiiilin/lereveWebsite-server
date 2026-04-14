@@ -14,12 +14,14 @@ export class S3Service {
   private readonly logger = new Logger(S3Service.name);
 
   constructor(private configService: ConfigService) {
+    const accessKeyId = this.configService.get('AWS_ACCESS_KEY_ID');
+    const secretAccessKey = this.configService.get('AWS_SECRET_ACCESS_KEY');
+
     this.s3 = new S3Client({
       region: this.configService.get('AWS_S3_REGION')!,
-      credentials: {
-        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID')!,
-        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')!,
-      },
+      ...(accessKeyId && secretAccessKey
+        ? { credentials: { accessKeyId, secretAccessKey } }
+        : {}),
     });
   }
 
