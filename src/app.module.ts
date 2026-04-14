@@ -7,7 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
-import { UploadModule } from './upload/upload.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { UploadModule } from './upload/upload.module';
     UsersModule,
     ProductsModule,
     OrdersModule,
-    UploadModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [AppService],

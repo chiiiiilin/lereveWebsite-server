@@ -1,4 +1,4 @@
-import { UploadService } from './../upload/upload.service';
+import { S3Service } from './../s3/s3.service';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -18,16 +18,14 @@ interface ProductDocument {
 export class ProductsService {
   constructor(
     @InjectModel(Product.name) private readonly productModel: Model<Product>,
-    private readonly uploadService: UploadService,
+    private readonly s3Service: S3Service,
   ) {}
   private readonly logger = new Logger(ProductsService.name);
 
   private async attachImageUrls(product: ProductDocument) {
     const imageUrls = product.imageKeys?.length
       ? await Promise.all(
-          product.imageKeys.map((key) =>
-            this.uploadService.getPresignedUrl(key),
-          ),
+          product.imageKeys.map((key) => this.s3Service.getPresignedUrl(key)),
         )
       : undefined;
 
@@ -37,7 +35,7 @@ export class ProductsService {
         imageUrls: variant.imageKeys?.length
           ? await Promise.all(
               variant.imageKeys.map((key) =>
-                this.uploadService.getPresignedUrl(key),
+                this.s3Service.getPresignedUrl(key),
               ),
             )
           : undefined,

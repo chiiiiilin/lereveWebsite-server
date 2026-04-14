@@ -5,7 +5,7 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { UploadService } from './upload.service';
+import { S3Service } from './s3.service';
 import '@fastify/multipart';
 import { ApiConsumes, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Auth } from 'src/auth/auth.decorator';
@@ -22,13 +22,13 @@ interface MultipartRequest {
   >;
 }
 
-@Controller('upload')
-export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
-  private readonly logger = new Logger(UploadController.name);
+@Controller('s3')
+export class S3Controller {
+  constructor(private readonly s3Service: S3Service) {}
+  private readonly logger = new Logger(S3Controller.name);
 
-  /**上傳檔案 */
-  @Post()
+  /**上傳圖片 */
+  @Post('upload')
   @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '上傳檔案',
@@ -52,7 +52,7 @@ export class UploadController {
 
     const buffer = await file.toBuffer();
 
-    return this.uploadService.uploadImage({
+    return this.s3Service.uploadImage({
       buffer,
       originalname: file.filename,
       mimetype: file.mimetype,

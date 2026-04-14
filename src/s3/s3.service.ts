@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
@@ -6,11 +6,12 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { validateImageFile } from './file-validation';
 
 @Injectable()
-export class UploadService {
+export class S3Service {
   private s3: S3Client;
-  private readonly logger = new Logger(UploadService.name);
+  private readonly logger = new Logger(S3Service.name);
 
   constructor(private configService: ConfigService) {
     this.s3 = new S3Client({
@@ -27,10 +28,7 @@ export class UploadService {
     originalname: string;
     mimetype: string;
   }) {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.mimetype)) {
-      throw new BadRequestException('只接受jpeg, jpg, png, webp 格式');
-    }
+    const { detectedMime } = await validateImageFile(file);
 
     const bucket = this.configService.get('AWS_S3_BUCKET') as string;
     const ext = file.originalname.split('.').pop();
@@ -40,7 +38,7 @@ export class UploadService {
       Bucket: bucket,
       Key: key,
       Body: file.buffer,
-      ContentType: file.mimetype,
+      ContentType: detectedMime,
     });
 
     await this.s3.send(command);

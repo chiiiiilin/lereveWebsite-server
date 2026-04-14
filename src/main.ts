@@ -11,7 +11,7 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import multipart from '@fastify/multipart';
-import { UploadModule } from './upload/upload.module';
+import { S3Module } from './s3/s3.module';
 
 async function bootstrap() {
   const port = Number(process.env.PORT);
@@ -28,7 +28,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  await app.register(multipart, {
+  await app.register(multipart as any, {
     limits: {
       fileSize: 5 * 1024 * 1024,
     },
@@ -58,7 +58,7 @@ async function bootstrap() {
         UsersModule,
         ProductsModule,
         OrdersModule,
-        UploadModule,
+        S3Module,
       ],
     });
     SwaggerModule.setup('swagger', app, document);
