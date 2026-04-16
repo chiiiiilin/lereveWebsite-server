@@ -3,12 +3,14 @@ import { ApiOperation } from '@nestjs/swagger';
 import { LoginRequest, JWTObject } from 'src/auth/auth.dto';
 import { AuthService } from './auth.service';
 import { Auth } from '../auth/auth.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   // 登入
+  @Throttle({ default: { ttl: 60000, limit: 3 } })
   @Post('login')
   @ApiOperation({
     summary: '登入',

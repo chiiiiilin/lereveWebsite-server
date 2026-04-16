@@ -18,7 +18,7 @@ async function bootstrap() {
   const swaggerUrl = process.env.SWAGGER_URL;
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter({ trustProxy: true }),
   );
   app.enableCors({
     methods: ['GET', 'POST', 'PUT'],
