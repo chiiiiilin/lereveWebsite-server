@@ -49,6 +49,7 @@ describe('AuthService', () => {
       username: 'test',
       role: 'admin',
       access_token: 'fake-token',
+      refresh_token: 'fake-token',
     });
   });
 

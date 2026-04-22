@@ -11,6 +11,7 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import multipart from '@fastify/multipart';
+import cookie from '@fastify/cookie';
 import { S3Module } from './s3/s3.module';
 
 async function bootstrap() {
@@ -27,6 +28,7 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('/api');
+  await app.register(cookie as any);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.register(multipart as any, {
     limits: {
