@@ -1,7 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { UserRoleEnum } from 'src/users/users.schema';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +13,12 @@ export class AuthService {
   async logIn(
     username: string,
     password: string,
-  ): Promise<{ username: string; role: string; access_token: string }> {
+  ): Promise<{
+    username: string;
+    role: string;
+    access_token: string;
+    refresh_token: string;
+  }> {
     this.logger.log(`auth login: ${username}`);
     const user = await this.usersService.findUserFromLogin(username, password);
     if (!user) throw new UnauthorizedException();
@@ -27,14 +31,22 @@ export class AuthService {
     return {
       username: user.username,
       role: user.role,
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: '15m' }),
+      refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
 
-  refreshToken(username: string, role: UserRoleEnum) {
-    this.logger.log(`refresh token: ${username}`);
+  refreshToken(token: string) {
+    const { userId, username, role } = this.jwtService.verify(token);
     return {
-      access_token: this.jwtService.sign({ username, role }),
+      access_token: this.jwtService.sign(
+        { userId, username, role },
+        { expiresIn: '15m' },
+      ),
+      refresh_token: this.jwtService.sign(
+        { userId, username, role },
+        { expiresIn: '7d' },
+      ),
     };
   }
 }
