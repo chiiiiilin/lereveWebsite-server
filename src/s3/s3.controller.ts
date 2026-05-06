@@ -29,7 +29,7 @@ export class S3Controller {
 
   /**上傳圖片 */
   @Post('upload')
-  @Auth(UserRoleEnum.ADMIN)
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.STAFF)
   @ApiOperation({
     summary: '上傳檔案',
     description: '上傳檔案',

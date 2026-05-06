@@ -10,7 +10,7 @@ export class UpdateUserRoleDto {
   @ApiProperty({
     description: '使用者權限',
     required: true,
-    default: UserRoleEnum.ADMIN,
+    default: UserRoleEnum.STAFF,
   })
   @IsEnum(UserRoleEnum)
   role: UserRoleEnum;
