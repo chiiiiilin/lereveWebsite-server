@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { User } from './users.schema';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 const mockUserModel = {
   exists: jest.fn(),
@@ -42,26 +42,13 @@ describe('UsersService', () => {
     ).rejects.toThrow(NotFoundException);
   });
 
-  it('不能改非自己的帳號', async () => {
-    mockUserModel.exists.mockResolvedValue({ _id: 'userA' });
-
-    await expect(
-      service.putUser('userA', { email: 'test@test.com' }, undefined, 'userB'),
-    ).rejects.toThrow(ForbiddenException);
-  });
-
   it('更新沒傳密碼就不動passwordHash', async () => {
     mockUserModel.exists.mockResolvedValue({ _id: 'userA' });
     mockUserModel.findByIdAndUpdate.mockReturnValue(
       mockChain({ _id: 'userA' }),
     );
 
-    await service.putUser(
-      'userA',
-      { email: 'test@test.com' },
-      undefined,
-      'userA',
-    );
+    await service.putUser('userA', { email: 'test@test.com' }, undefined);
 
     expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
       'userA',
@@ -76,7 +63,7 @@ describe('UsersService', () => {
       mockChain({ _id: 'userA' }),
     );
 
-    await service.putUser('userA', { password: 'test' }, undefined, 'userA');
+    await service.putUser('userA', { password: 'test' }, undefined);
 
     expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
       'userA',
@@ -91,7 +78,7 @@ describe('UsersService', () => {
       mockChain({ _id: 'userA' }),
     );
 
-    await service.putUser('userA', {}, true, 'userA');
+    await service.putUser('userA', {}, true);
 
     expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
       'userA',

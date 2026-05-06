@@ -35,7 +35,7 @@ export class OrdersController {
 
   /**賣家查詢所有訂單 */
   @Get()
-  @Auth(UserRoleEnum.ADMIN)
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.STAFF)
   @ApiOperation({
     summary: '查詢所有訂單',
     description: '用於賣家查詢所有訂單，查詢單一買家的所有訂單時加上userId參數',
@@ -78,7 +78,7 @@ export class OrdersController {
 
   /**賣家查詢單筆訂單詳情 */
   @Get(':orderId')
-  @Auth(UserRoleEnum.ADMIN)
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.STAFF)
   @ApiOperation({
     summary: '查詢單筆訂單',
     description: '賣家查詢單筆訂單詳情',
@@ -89,7 +89,7 @@ export class OrdersController {
 
   /**修改單筆訂單 */
   @Put('edit/:orderId')
-  @Auth(UserRoleEnum.ADMIN)
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.STAFF)
   @ApiOperation({
     summary: '更新單筆訂單',
     description: '更新單筆訂單，只允許admin更新訂單狀態及付款確認狀態',

@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export enum UserRoleEnum {
   ADMIN = 'admin',
+  STAFF = 'staff',
   USER = 'user',
 }
 

@@ -34,20 +34,17 @@ export class UsersController {
     return this.usersService.addUser(body);
   }
 
-  /**修改使用者 */
-  @Put('edit/:userId')
+  /**修改自己的帳號資訊 */
+  @Put('mine')
   @Auth()
   @ApiOperation({
-    summary: '修改使用者',
-    description: '修改使用者',
+    summary: '修改自己的帳號資訊',
+    description: '修改自己的帳號資訊',
   })
-  editUser(
-    @Param('userId') userId: string,
-    @Body() body: UpdateUserDto,
-    @Req() req: { user: JWTObject },
-  ) {
+  editUser(@Body() body: UpdateUserDto, @Req() req: { user: JWTObject }) {
+    const userId = req.user.userId;
     this.logger.log(`[PUT] user - ${userId}`);
-    return this.usersService.putUser(userId, body, undefined, req.user.userId);
+    return this.usersService.putUser(userId, body);
   }
 
   /**變更使用者權限 */
@@ -65,14 +62,15 @@ export class UsersController {
     return this.usersService.updateRole(userId, body);
   }
 
-  /**軟刪除使用者 */
-  @Put('remove/:userId')
+  /**軟刪除自己的帳號 */
+  @Put('mine/remove')
   @Auth()
   @ApiOperation({
     summary: '刪除使用者',
     description: '刪除使用者',
   })
-  removeUser(@Param('userId') userId: string) {
+  removeUser(@Req() req: { user: JWTObject }) {
+    const userId = req.user.userId;
     this.logger.log(`[PUT] remove user - ${userId}`);
     return this.usersService.putUser(userId, {}, true);
   }
