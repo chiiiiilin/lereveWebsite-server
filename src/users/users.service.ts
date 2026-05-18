@@ -45,6 +45,19 @@ export class UsersService {
     return user;
   }
 
+  /**用id找使用者 */
+  async findUserById(userId: string) {
+    const user = await this.userModel
+      .findById(userId)
+      .where({ trashed: false })
+      .select('-passwordHash -trashed')
+      .exec();
+    if (!user) {
+      throw new NotFoundException(`User not found - ${userId}`);
+    }
+    return user;
+  }
+
   /**更新使用者 */
   async putUser(userId: string, data: UpdateUserDto, trashed?: boolean) {
     const exists = await this.userModel.exists({ _id: userId, trashed: false });

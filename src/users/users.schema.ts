@@ -29,10 +29,10 @@ export class SavedAddress {
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ default: UserRoleEnum.USER, required: true })
+  @Prop({ required: true, unique: true })
   username: string;
 
-  @Prop({ default: '', required: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })

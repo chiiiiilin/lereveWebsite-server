@@ -6,6 +6,7 @@ import {
   Param,
   Logger,
   Req,
+  Get,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -22,9 +23,10 @@ export class UsersController {
 
   /**新增使用者 */
   @Post('add')
+  @Auth(UserRoleEnum.ADMIN)
   @ApiOperation({
     summary: '新增使用者',
-    description: '新增使用者',
+    description: '限Admin帳號新增，一般會員請走注冊',
   })
   // createUser(@Body() body: Record<string, unknown>) {
   createUser(@Body() body: CreateUserDto) {
@@ -32,6 +34,15 @@ export class UsersController {
     // const dto = new CreateUserDto(body);
     // return this.usersService.addUser(dto);
     return this.usersService.addUser(body);
+  }
+
+  /**取得自己的帳號資訊 */
+  @Get('mine')
+  @Auth()
+  @ApiOperation({ summary: '取得自己的帳號資訊' })
+  getMe(@Req() req: { user: JWTObject }) {
+    const userId = req.user.userId;
+    return this.usersService.findUserById(userId);
   }
 
   /**修改自己的帳號資訊 */
