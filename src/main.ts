@@ -22,6 +22,7 @@ async function bootstrap() {
     new FastifyAdapter({ trustProxy: true }),
   );
   app.enableCors({
+    origin: process.env.CORS_ORIGIN?.split(',') ?? [],
     methods: ['GET', 'POST', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,
