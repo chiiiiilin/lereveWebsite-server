@@ -36,17 +36,20 @@ export class AuthService {
     };
   }
 
-  refreshToken(token: string) {
-    const { userId, username, role } = this.jwtService.verify(token);
-    return {
-      access_token: this.jwtService.sign(
-        { userId, username, role },
-        { expiresIn: '15m' },
-      ),
-      refresh_token: this.jwtService.sign(
-        { userId, username, role },
-        { expiresIn: '7d' },
-      ),
-    };
+  async refreshToken(token: string) {
+    try {
+      const { userId } = this.jwtService.verify(token);
+
+      const user = await this.usersService.findUserById(userId);
+      return {
+        access_token: this.jwtService.sign(
+          { userId, username: user.username, role: user.role },
+          { expiresIn: '15m' },
+        ),
+      };
+    } catch (error) {
+      this.logger.warn('refreshToken failed', error);
+      throw new UnauthorizedException();
+    }
   }
 }

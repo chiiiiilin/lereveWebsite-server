@@ -49,19 +49,11 @@ export class AuthController {
     summary: '刷新Token',
     description: '帶有效的 refresh token cookie 刷新 access token',
   })
-  refreshToken(
-    @Request() req: fastify.FastifyRequest,
-    @Response({ passthrough: true }) res: fastify.FastifyReply,
-  ) {
+  refreshToken(@Request() req: fastify.FastifyRequest) {
     const token = req.cookies['refresh_token'];
     if (!token) throw new UnauthorizedException();
 
-    const { access_token, refresh_token } =
-      this.authService.refreshToken(token);
-
-    res.setCookie('refresh_token', refresh_token, COOKIE_OPTIONS);
-
-    return { access_token };
+    return this.authService.refreshToken(token);
   }
 
   // 登出

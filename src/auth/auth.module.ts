@@ -10,9 +10,11 @@ import { AuthService } from './auth.service';
     UsersModule,
     JwtModule.registerAsync({
       global: true,
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-      }),
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret) throw new Error('JWT_SECRET is not defined');
+        return { secret };
+      },
       inject: [ConfigService],
     }),
   ],
