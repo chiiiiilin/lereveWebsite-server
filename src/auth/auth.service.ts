@@ -26,7 +26,6 @@ export class AuthService {
 
     const payload = {
       userId: user._id,
-      username: user.username,
       role: user.role,
     };
     return {
@@ -45,7 +44,7 @@ export class AuthService {
       const user = await this.usersService.findUserById(userId);
       return {
         access_token: this.jwtService.sign(
-          { userId, username: user.username, role: user.role },
+          { userId, role: user.role },
           { expiresIn: '15m' },
         ),
       };

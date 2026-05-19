@@ -22,6 +22,5 @@ export class LoginRequest {
 
 export class JWTObject {
   userId: string;
-  username: string;
   role: UserRoleEnum;
 }
