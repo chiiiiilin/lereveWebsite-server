@@ -35,12 +35,12 @@ export class AuthController {
     @Body() body: LoginRequest,
     @Response({ passthrough: true }) res: fastify.FastifyReply,
   ) {
-    const { username, role, access_token, refresh_token } =
+    const { username, email, role, access_token, refresh_token } =
       await this.authService.logIn(body.username, body.password);
 
     res.setCookie('refresh_token', refresh_token, COOKIE_OPTIONS);
 
-    return { username, role, access_token };
+    return { username, email, role, access_token };
   }
 
   // 刷新token

@@ -16,6 +16,7 @@ export class AuthService {
   ): Promise<{
     username: string;
     role: string;
+    email: string;
     access_token: string;
     refresh_token: string;
   }> {
@@ -31,6 +32,7 @@ export class AuthService {
     return {
       username: user.username,
       role: user.role,
+      email: user.email,
       access_token: this.jwtService.sign(payload, { expiresIn: '15m' }),
       refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
