@@ -28,6 +28,17 @@ export class UsersService {
     };
   }
 
+  /**查詢所有使用者 */
+  async findAll(page = 1, limit = 20) {
+    return await this.userModel
+      .find({ trashed: false })
+      .select('-passwordHash -trashed')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+  }
+
   /**登入找到使用者 */
   async findUserFromLogin(username: string, password: string) {
     const user = await this.userModel

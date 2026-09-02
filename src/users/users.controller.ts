@@ -36,6 +36,17 @@ export class UsersController {
     return this.usersService.addUser(body);
   }
 
+  /**查詢所有使用者 */
+  @Get()
+  @Auth(UserRoleEnum.ADMIN, UserRoleEnum.STAFF)
+  @ApiOperation({
+    summary: '後台查詢所有使用者',
+  })
+  findAll() {
+    this.logger.log(`[GET] Find All User`);
+    return this.usersService.findAll();
+  }
+
   /**取得自己的帳號資訊 */
   @Get('mine')
   @Auth()
